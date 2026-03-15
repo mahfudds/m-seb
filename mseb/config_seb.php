@@ -41,16 +41,28 @@ $sebconfig = <<<XML
     <string>{$starturl}</string>
     <key>allowQuit</key>
     <false/>
+    <key>mobileAllowQuit</key>
+    <false/>
+    <key>quitPassword</key>
+    <string>mseb123</string>
+    <key>mobileQuitPassword</key>
+    <string>mseb123</string>
+    <key>allowScreenshot</key>
+    <false/>
+    <key>mobileAllowScreenshot</key>
+    <false/>
+    <key>allowAAC</key>
+    <true/>
     <key>showReloadButton</key>
     <false/>
     <key>showNavigationButtons</key>
     <false/>
+    <key>mobileShowReloadButton</key>
+    <false/>
+    <key>mobileShowNavigationButtons</key>
+    <false/>
     <key>sendBrowserExamKey</key>
     <true/>
-    <key>allowAAC</key>
-    <true/>
-    <key>allowScreenshot</key>
-    <false/>
     <key>allowPreferencesWindow</key>
     <false/>
     <key>exitKeyCombinations</key>
@@ -65,6 +77,8 @@ $sebconfig = <<<XML
     <false/>
     <key>monitorSecondControl</key>
     <true/>
+    <key>allowUserSwitches</key>
+    <false/>
 </dict>
 </plist>
 XML;
