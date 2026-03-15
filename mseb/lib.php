@@ -24,13 +24,13 @@ function local_mseb_coursemodule_standard_elements($formwrapper, $mform) {
         $quizid = $formwrapper->get_coursemodule()->instance;
         $config = $DB->get_record('local_mseb', array('quizid' => $quizid));
 
-        $mform->addElement('header', 'msebheader', 'M-SEB PROCTORING');
+        $mform->addElement('header', 'msebheader', get_string('msebheader', 'local_mseb'));
 
         $mform->addElement(
             'advcheckbox',
             'mseb_enabled',
-            'AKTIFKAN KUNCIAN M-SEB',
-            'Paksa penggunaan aplikasi M-SEB (Android) atau blokir browser biasa.'
+            get_string('mseb_enabled', 'local_mseb'),
+            get_string('mseb_enabled_desc', 'local_mseb')
         );
         $mform->setType('mseb_enabled', PARAM_INT);
         $mform->setDefault('mseb_enabled', $config ? $config->enabled : 0);
@@ -38,8 +38,8 @@ function local_mseb_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->addElement(
             'advcheckbox',
             'mseb_allowpc',
-            'IZINKAN LAPTOP / PC (Chrome)',
-            'Izinkan akses melalui Google Chrome di Laptop.'
+            get_string('mseb_allowpc', 'local_mseb'),
+            get_string('mseb_allowpc_desc', 'local_mseb')
         );
         $mform->setType('mseb_allowpc', PARAM_INT);
         $mform->setDefault('mseb_allowpc', $config ? $config->allowpc : 0);
@@ -47,8 +47,8 @@ function local_mseb_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->addElement(
             'advcheckbox',
             'mseb_protectpc',
-            'AKTIFKAN PENGAMANAN JS DI PC',
-            'Gunakan Timer Hukuman jika PC pindah tab.'
+            get_string('mseb_protectpc', 'local_mseb'),
+            get_string('mseb_protectpc_desc', 'local_mseb')
         );
         $mform->setType('mseb_protectpc', PARAM_INT);
         $mform->setDefault('mseb_protectpc', $config ? $config->protectpc : 0);
@@ -56,8 +56,8 @@ function local_mseb_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->addElement(
             'advcheckbox',
             'mseb_allowios',
-            'IZINKAN iOS (SAFARI/CHROME)',
-            'Izinkan iPhone dengan Perlindungan Pro Guard JS (Hukuman Timer).'
+            get_string('mseb_allowios', 'local_mseb'),
+            get_string('mseb_allowios_desc', 'local_mseb')
         );
         $mform->setType('mseb_allowios', PARAM_INT);
         $mform->setDefault('mseb_allowios', $config ? $config->allowios : 1);
@@ -65,18 +65,20 @@ function local_mseb_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->addElement(
             'text',
             'mseb_mintime',
-            'MINIMAL WAKTU PENGERJAAN (MENIT)',
+            get_string('mseb_mintime', 'local_mseb'),
             array('size' => '5')
         );
+        $mform->addHelpButton('mseb_mintime', 'mseb_mintime', 'local_mseb');
         $mform->setType('mseb_mintime', PARAM_INT);
         $mform->setDefault('mseb_mintime', $config ? $config->mintime : 0);
 
         $mform->addElement(
             'text',
             'mseb_minanswered',
-            'MINIMAL SOAL TERJAWAB (%)',
+            get_string('mseb_minanswered', 'local_mseb'),
             array('size' => '5')
         );
+        $mform->addHelpButton('mseb_minanswered', 'mseb_minanswered', 'local_mseb');
         $mform->setType('mseb_minanswered', PARAM_INT);
         $mform->setDefault('mseb_minanswered', $config ? $config->minanswered : 0);
     }
@@ -189,6 +191,13 @@ function local_mseb_extend_navigation() {
         if ($blocked) {
             local_mseb_show_blocked_page($reason);
         } else if ($inject && strpos($script, 'attempt.php') !== false) {
+            // Localized strings for JS.
+            $js_viol = get_string('js:violation', 'local_mseb');
+            $js_count = get_string('js:violationcount', 'local_mseb');
+            $js_leaving = get_string('js:leavingexam', 'local_mseb');
+            $js_level = get_string('js:penalty_level', 'local_mseb');
+            $js_continued = get_string('js:sanction_continued', 'local_mseb');
+
             // SUNTIKAN SCRIPT LANGSUNG (METHOD BAPAK YANG JALAN)
             $js = "
             (function(){
@@ -209,7 +218,7 @@ function local_mseb_extend_navigation() {
                 document.addEventListener('visibilitychange', ()=>{
                     if(document.visibilityState === 'hidden'){
                         hiddenAt = Date.now(); ignoreBlur = true;
-                        if(!navSafe) handleViol('Pindah Tab');
+                        if(!navSafe) handleViol('{$js_leaving}');
                     } else {
                         hiddenAt = 0; setTimeout(()=>{ignoreBlur=false;}, 1000);
                     }
@@ -217,10 +226,10 @@ function local_mseb_extend_navigation() {
                 window.addEventListener('blur', ()=>{ if(!ignoreBlur) blurAt=Date.now(); });
                 window.addEventListener('focus', ()=>{
                     if(!blurAt) return;
-                    if((Date.now()-blurAt) > 800 && !navSafe) handleViol('Pindah Aplikasi');
+                    if((Date.now()-blurAt) > 800 && !navSafe) handleViol('{$js_leaving}');
                     blurAt = 0;
                 });
-                setInterval(()=>{ if(!document.hasFocus() && !navSafe && !ignoreBlur && !isPen) handleViol('Hilang Fokus'); }, 2000);
+                setInterval(()=>{ if(!document.hasFocus() && !navSafe && !ignoreBlur && !isPen) handleViol('{$js_leaving}'); }, 2000);
 
                 function handleViol(r){
                     if(navSafe || isPen) return;
@@ -234,7 +243,7 @@ function local_mseb_extend_navigation() {
                     if(isPen) return; isPen = true;
                     const ov = document.createElement('div');
                     ov.style.cssText = 'position:fixed;inset:0;background:rgba(200,0,0,0.98);color:#fff;z-index:9999999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:sans-serif;padding:20px;';
-                    ov.innerHTML = `<h1>PELANGGARAN DETEKSI</h1><p>\${r}<br>Penalty Level: \${getV()}</p><div style='font-size:50px;font-weight:bold;background:#fff;color:#c00;padding:10px 30px;border-radius:10px;' id='p-t'>00:00</div>`;
+                    ov.innerHTML = `<h1>{$js_viol}</h1><p>\${r}<br>{$js_level}: \${getV()}</p><div style='font-size:50px;font-weight:bold;background:#fff;color:#c00;padding:10px 30px;border-radius:10px;' id='p-t'>00:00</div>`;
                     document.body.appendChild(ov);
                     document.body.style.overflow = 'hidden';
                     const t = setInterval(()=>{
@@ -252,10 +261,10 @@ function local_mseb_extend_navigation() {
                     if(document.getElementById('mseb-mon')) return;
                     const m = document.createElement('div'); m.id='mseb-mon';
                     m.style.cssText = 'position:fixed;top:10px;right:10px;z-index:999998;background:#0a0;color:#fff;padding:10px;border-radius:8px;font-weight:bold;pointer-events:none;';
-                    m.innerHTML = 'Pelanggaran: <span id=\"monV\">0</span>';
+                    m.innerHTML = '{$js_count}: <span id=\"monV\">0</span>';
                     document.body.appendChild(m); setV(getV());
                     const sEnd = parseInt(localStorage.getItem(PEN_KEY)||'0',10);
-                    if(sEnd > Date.now()) showPen(sEnd, 'Sanksi Lanjutan');
+                    if(sEnd > Date.now()) showPen(sEnd, '{$js_continued}');
                 };
                 if(document.readyState==='complete') init(); else window.addEventListener('load', init);
                 document.addEventListener('contextmenu', e=>e.preventDefault());
@@ -271,10 +280,36 @@ function local_mseb_extend_navigation() {
  * Display block page.
  */
 function local_mseb_show_blocked_page($key) {
+    global $FULLME, $USER, $CFG;
     while (ob_get_level()) ob_end_clean();
     header("HTTP/1.1 403 Forbidden");
+    
     $msg = get_string($key, 'local_mseb');
-    echo "<!DOCTYPE html><html><head><title>🛑 ACCESS BLOCKED</title><style>body{background:#111;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;} .box{border:2px solid #e00;padding:40px;border-radius:15px;max-width:400px;}</style></head>
-    <body><div class='box'><h1>🛑 TERKUNCI!</h1><p>$msg</p><a href='javascript:history.back()' style='color:#e00;font-weight:bold;text-decoration:none;'>[ KEMBALI ]</a></div></body></html>";
+    $title = get_string('blocked_locked', 'local_mseb');
+    $heading = get_string('blocked_title', 'local_mseb');
+    $backbutton = get_string('blocked_back', 'local_mseb');
+
+    echo <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{$title} 🛑</title>
+    <style>
+        body{background:#111;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;}
+        .box{border:3px solid #e00;padding:40px;border-radius:15px;max-width:450px;background:#222;box-shadow:0 10px 30px rgba(224,60,49,0.4);}
+        h1{color:#e03c31;margin-bottom:20px;}
+        p{line-height:1.6;color:#ddd;margin-bottom:30px;}
+        .btn{background:#e03c31;color:#fff;padding:12px 30px;border-radius:5px;text-decoration:none;font-weight:bold;display:inline-block;}
+    </style>
+</head>
+<body>
+    <div class='box'>
+        <h1>{$heading}</h1>
+        <p>{$msg}</p>
+        <a href='javascript:history.back()' class='btn'>{$backbutton}</a>
+    </div>
+</body>
+</html>
+HTML;
     die();
 }
