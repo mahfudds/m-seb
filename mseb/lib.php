@@ -323,7 +323,7 @@ function local_mseb_extend_navigation() {
  * @param bool $showsebbutton Whether to show the 'Open in SEB' button.
  */
 function local_mseb_show_blocked_page($messagekey, $showsebbutton = false) {
-    global $FULLME;
+    global $FULLME, $USER, $CFG;
     $message    = get_string($messagekey, 'local_mseb');
   $title   = get_string('blocked_locked', 'local_mseb');
   $heading  = get_string('blocked_title', 'local_mseb');
