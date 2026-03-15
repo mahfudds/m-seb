@@ -371,7 +371,9 @@ function local_mseb_show_blocked_page($messagekey, $showsebbutton = false) {
         <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
 HTML;
     if ($showsebbutton) {
-        $seburl = str_replace(['http://', 'https://'], ['seb://', 'sebs://'], $FULLME);
+        $cmid = optional_param('id', 0, PARAM_INT) ?: (optional_param('cmid', 0, PARAM_INT) ?: 0);
+        $configurl = new moodle_url('/local/mseb/config_seb.php', ['id' => $cmid]);
+        $seburl = str_replace(['http://', 'https://'], ['seb://', 'sebs://'], $configurl->out(false));
         $sebbuttontext = get_string('blocked_launch_seb', 'local_mseb');
         echo <<<HTML
             <a href="{$seburl}" class="btn" style="background: #28a745;">{$sebbuttontext}</a>
