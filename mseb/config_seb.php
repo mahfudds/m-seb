@@ -11,7 +11,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-require_login();
+// require_login(); // Removed to allow SEB app to fetch config without cookie sharing issues.
 
 $cmid = required_param('id', PARAM_INT);
 $cm   = get_coursemodule_from_id('quiz', $cmid);
@@ -51,6 +51,12 @@ $sebconfig = <<<XML
     <key>showReloadButton</key>
     <true/>
     <key>showNavigationButtons</key>
+    <true/>
+    <key>lockIPad</key>
+    <true/>
+    <key>allowManualResizing</key>
+    <false/>
+    <key>monitorSecondControl</key>
     <true/>
 </dict>
 </plist>
