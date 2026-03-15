@@ -372,7 +372,8 @@ function local_mseb_show_blocked_page($messagekey, $showsebbutton = false) {
 HTML;
     if ($showsebbutton) {
         $cmid = optional_param('id', 0, PARAM_INT) ?: (optional_param('cmid', 0, PARAM_INT) ?: 0);
-        $token = md5($USER->id . $cmid . ($CFG->passwordsaltmain ?? 'mseb'));
+        $salt = $CFG->passwordsaltmain ?? 'mseb_default_salt';
+        $token = md5($USER->id . '|' . $cmid . '|' . $salt);
         $configurl = new moodle_url('/local/mseb/config_seb.php', [
             'id' => $cmid,
             'u' => $USER->id,

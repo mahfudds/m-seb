@@ -11,20 +11,25 @@
  */
 require_once(__DIR__ . '/../../config.php');
 
-// Security check: Validate the token to prevent brute-forcing cmids.
+// Security check: Validate the token using a consistent salt.
 $cmid  = optional_param('id', 0, PARAM_INT);
 $token = optional_param('token', '', PARAM_ALPHANUM);
 $userid = optional_param('u', 0, PARAM_INT);
-$expectedtoken = md5($userid . $cmid . ($CFG->passwordsaltmain ?? 'mseb'));
 
-if ($token !== $expectedtoken) {
-    throw new moodle_exception('accessdenied', 'local_mseb');
+// Use a consistent salt for both sides.
+$salt = $CFG->passwordsaltmain ?? 'mseb_default_salt';
+$expectedtoken = md5($userid . '|' . $cmid . '|' . $salt);
+
+if (empty($token) || $token !== $expectedtoken) {
+    header('HTTP/1.1 403 Forbidden');
+    die('M-SEB: Access Denied. Invalid security token.');
 }
 
 $cm = get_coursemodule_from_id('quiz', $cmid);
 
 if (!$cm) {
-    throw new moodle_exception('invalidcoursemodule');
+    header('HTTP/1.1 404 Not Found');
+    die('M-SEB: Quiz not found.');
 }
 
 $quizurl = new moodle_url('/mod/quiz/view.php', ['id' => $cmid]);
