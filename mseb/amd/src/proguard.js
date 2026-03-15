@@ -77,6 +77,19 @@ export const init = async(quizId, isIos) => {
   let hiddenAt = 0;
   let ignoreBlur = false;
   let isPenaltyRunning = false;
+  const penaltyEndTimeKey = `${storageKey}_endtime`;
+
+  /**
+   * Resume penalty if it was running.
+   */
+  const checkResumePenalty = () => {
+    const endTime = parseInt(window.localStorage.getItem(penaltyEndTimeKey) || '0', 10);
+    const now = Date.now();
+    if (endTime > now) {
+      const remaining = Math.ceil((endTime - now) / 1000);
+      showPenaltyOverlay(remaining, endTime);
+    }
+  };
 
   /**
    * @returns {number} Current violation count.
@@ -148,24 +161,34 @@ export const init = async(quizId, isIos) => {
     }
   };
 
-  /**
-   * Record a violation and show the penalty overlay.
-   *
-   * @param {string} reason Human-readable reason for the violation.
-   */
   const addViolation = async(reason) => {
-    if (navSafe || isPenaltyRunning) {
-      return;
-    }
-
     const v = getViolations() + 1;
     setViolations(v);
     beep(1200, 200);
 
-    isPenaltyRunning = true;
-    let penaltySeconds = v * 60;
+    const now = Date.now();
+    const penaltyDuration = v * 60 * 1000;
+    const endTime = now + penaltyDuration;
+    window.localStorage.setItem(penaltyEndTimeKey, String(endTime));
 
-    const detectedStr = await get_string('js:detected', 'local_mseb', reason);
+    showPenaltyOverlay(v * 60, endTime);
+  };
+
+  /**
+   * Display the penalty overlay with a countdown.
+   *
+   * @param {number} seconds Countdown start.
+   * @param {number} endTime Timestamp when penalty finishes.
+   */
+  const showPenaltyOverlay = async(seconds, endTime) => {
+    if (isPenaltyRunning) {
+        return;
+    }
+    isPenaltyRunning = true;
+    let penaltySeconds = seconds;
+    const v = getViolations();
+
+    const detectedStr = await get_string('js:detected', 'local_mseb', "App Switch / Focus Loss");
     const penaltyStr = await get_string('js:penaltynotice', 'local_mseb', v);
 
     const overlay = document.createElement('div');
@@ -207,6 +230,7 @@ export const init = async(quizId, isIos) => {
         overlay.remove();
         document.body.style.overflow = '';
         isPenaltyRunning = false;
+        window.localStorage.removeItem(penaltyEndTimeKey);
       }
     }, 1000);
   };
@@ -226,28 +250,27 @@ export const init = async(quizId, isIos) => {
       navSafe = true;
       setTimeout(() => {
         navSafe = false;
-      }, 2000);
+      }, 1000); // Reduced from 2000ms for tighter security.
     }
   }, true);
 
   // Detect tab switching / minimising / app switching.
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
+  ['visibilitychange', 'pagehide', 'beforeunload'].forEach(evt => {
+    document.addEventListener(evt, () => {
+      if (evt === 'visibilitychange' && document.visibilityState !== 'hidden') {
+        const diff = Date.now() - hiddenAt;
+        if (diff > SLEEP_IGNORE_MS) { /* asleep */ }
+        hiddenAt = 0;
+        setTimeout(() => { ignoreBlur = false; }, 500);
+        return;
+      }
+      
       hiddenAt = Date.now();
       ignoreBlur = true;
       if (!navSafe) {
         addViolation(strings.leavingExam);
       }
-    } else if (document.visibilityState === 'visible' && hiddenAt) {
-      const diff = Date.now() - hiddenAt;
-      if (diff > SLEEP_IGNORE_MS) {
-        // Device may have been asleep — don't double-count.
-      }
-      hiddenAt = 0;
-      setTimeout(() => {
-        ignoreBlur = false;
-      }, 1000);
-    }
+    });
   });
 
   // Detect loss of focus (clicking outside, multi-window, status bar).
@@ -256,6 +279,19 @@ export const init = async(quizId, isIos) => {
       addViolation(strings.leavingExam);
     }
   });
+
+  // Heartbeat check for focus on iOS.
+  if (isIos) {
+    setInterval(() => {
+      if (!document.hasFocus() && !navSafe && !ignoreBlur && !isPenaltyRunning) {
+        addViolation(strings.leavingExam);
+      }
+    }, 2000);
+  }
+
+  // Initial check for resumed penalty.
+  document.addEventListener('DOMContentLoaded', checkResumePenalty);
+  checkResumePenalty(); // Also run immediately in case DOM already loaded.
 
   /**
    * Detect split-screen or small windowed mode.
