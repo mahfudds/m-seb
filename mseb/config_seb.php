@@ -61,13 +61,29 @@ $sebconfig = <<<XML
     <false/>
     <key>mobileShowNavigationButtons</key>
     <false/>
+    <key>mobileShowBack</key>
+    <false/>
+    <key>mobileShowForward</key>
+    <false/>
+    <key>mobileShowSettings</key>
+    <false/>
+    <key>mobileShowMenu</key>
+    <false/>
+    <key>mobileShowToolbar</key>
+    <false/>
+    <key>showMenuBar</key>
+    <false/>
+    <key>showTaskBar</key>
+    <false/>
+    <key>allowSharing</key>
+    <false/>
+    <key>mobileAllowSharing</key>
+    <false/>
     <key>sendBrowserExamKey</key>
     <true/>
     <key>allowPreferencesWindow</key>
     <false/>
     <key>exitKeyCombinations</key>
-    <false/>
-    <key>showTaskBar</key>
     <false/>
     <key>browserViewMode</key>
     <integer>0</integer>
@@ -78,6 +94,8 @@ $sebconfig = <<<XML
     <key>monitorSecondControl</key>
     <true/>
     <key>allowUserSwitches</key>
+    <false/>
+    <key>mobileAllowSpringboardLongPress</key>
     <false/>
 </dict>
 </plist>
