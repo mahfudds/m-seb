@@ -39,6 +39,10 @@ $sebconfig = <<<XML
 <dict>
     <key>startURL</key>
     <string>{$starturl}</string>
+    <key>browserWindowWebView</key>
+    <integer>3</integer>
+    <key>sendBrowserExamKey</key>
+    <true/>
     <key>allowQuit</key>
     <false/>
     <key>mobileAllowQuit</key>
@@ -79,8 +83,6 @@ $sebconfig = <<<XML
     <false/>
     <key>mobileAllowSharing</key>
     <false/>
-    <key>sendBrowserExamKey</key>
-    <true/>
     <key>allowPreferencesWindow</key>
     <false/>
     <key>exitKeyCombinations</key>
