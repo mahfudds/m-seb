@@ -44,66 +44,41 @@ $sebconfig = <<<XML
 <dict>
     <key>startURL</key>
     <string>{$starturl}</string>
-    <key>browserWindowWebView</key>
-    <integer>3</integer>
+
     <key>sendBrowserExamKey</key>
     <true/>
-    <key>allowQuit</key>
-    <false/>
-    <key>mobileAllowQuit</key>
-    <false/>
+
     <key>quitPassword</key>
     <string>mseb123</string>
-    <key>mobileQuitPassword</key>
-    <string>mseb123</string>
-    <key>allowScreenshot</key>
+
+    <key>allowQuit</key>
     <false/>
-    <key>mobileAllowScreenshot</key>
+    <key>allowPreferencesWindow</key>
     <false/>
+
     <key>allowAAC</key>
     <true/>
+    <key>lockIPad</key>
+    <true/>
+
+    <key>allowScreenshot</key>
+    <false/>
+
     <key>showReloadButton</key>
     <false/>
     <key>showNavigationButtons</key>
     <false/>
-    <key>mobileShowReloadButton</key>
-    <false/>
-    <key>mobileShowNavigationButtons</key>
-    <false/>
-    <key>mobileShowBack</key>
-    <false/>
-    <key>mobileShowForward</key>
-    <false/>
-    <key>mobileShowSettings</key>
-    <false/>
-    <key>mobileShowMenu</key>
-    <false/>
-    <key>mobileShowToolbar</key>
+    <key>showTaskBar</key>
     <false/>
     <key>showMenuBar</key>
     <false/>
-    <key>showTaskBar</key>
-    <false/>
-    <key>allowSharing</key>
-    <false/>
-    <key>mobileAllowSharing</key>
-    <false/>
-    <key>allowPreferencesWindow</key>
-    <false/>
-    <key>exitKeyCombinations</key>
-    <false/>
+
     <key>browserViewMode</key>
     <integer>0</integer>
-    <key>lockIPad</key>
-    <true/>
     <key>allowManualResizing</key>
     <false/>
     <key>monitorSecondControl</key>
     <true/>
-    <key>allowUserSwitches</key>
-    <false/>
-    <key>mobileAllowSpringboardLongPress</key>
-    <false/>
 </dict>
 </plist>
 XML;
