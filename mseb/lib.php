@@ -273,18 +273,24 @@ function local_mseb_extend_navigation() {
   $isandroid = (strpos($useragent, 'android') !== false);
   $ismobile = $isandroid || $isios || (strpos($useragent, 'mobile') !== false);
 
-  $blocked  = false;
-  $injectjs = false;
-  $messagekey = 'blocked_generic';
+    $isiosseb  = (strpos($useragent, 'seb') !== false) && $isios;
 
-  if ($isios) {
-    if ($config->allowios) {
-      $injectjs = true;
-    } else {
-      $blocked  = true;
-      $messagekey = 'blocked_ios';
-    }
-  } else if ($ismobile) {
+    $blocked   = false;
+    $injectjs  = false;
+    $messagekey = 'blocked_generic';
+    $showsebbutton = false;
+
+    if ($isios) {
+        if ($isiosseb) {
+            // Already inside SEB on iOS, allow.
+            $injectjs = false; // SEB is native-locked, no need for JS penalty.
+        } else {
+            // Outside SEB on iOS, block and show SEB launch button.
+            $blocked    = true;
+            $messagekey = 'blocked_ios_seb';
+            $showsebbutton = true;
+        }
+    } else if ($ismobile) {
     if (!$ismsebapp) {
       $blocked  = true;
       $messagekey = 'blocked_android';
@@ -299,9 +305,9 @@ function local_mseb_extend_navigation() {
     }
   }
 
-  if ($blocked) {
-    local_mseb_show_blocked_page($messagekey);
-  } else if ($injectjs) {
+    if ($blocked) {
+        local_mseb_show_blocked_page($messagekey, $showsebbutton);
+    } else if ($injectjs) {
     $PAGE->requires->js_call_amd(
       'local_mseb/proguard',
       'init',
@@ -314,9 +320,11 @@ function local_mseb_extend_navigation() {
  * Display a full-page block screen and terminate execution.
  *
  * @param string $messagekey The language string key for the block message.
+ * @param bool $showsebbutton Whether to show the 'Open in SEB' button.
  */
-function local_mseb_show_blocked_page($messagekey) {
-  $message  = get_string($messagekey, 'local_mseb');
+function local_mseb_show_blocked_page($messagekey, $showsebbutton = false) {
+    global $FULLME;
+    $message    = get_string($messagekey, 'local_mseb');
   $title   = get_string('blocked_locked', 'local_mseb');
   $heading  = get_string('blocked_title', 'local_mseb');
   $backbutton = get_string('blocked_back', 'local_mseb');
@@ -359,9 +367,20 @@ function local_mseb_show_blocked_page($messagekey) {
   <div class="box">
     <div class="icon">🛑</div>
     <h1>{$heading}</h1>
-    <p>{$message}</p>
-    <a href="javascript:history.back()" class="btn">{$backbutton}</a>
-  </div>
+        <p>{$message}</p>
+        <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+HTML;
+    if ($showsebbutton) {
+        $seburl = str_replace(['http://', 'https://'], ['seb://', 'sebs://'], $FULLME);
+        $sebbuttontext = get_string('blocked_launch_seb', 'local_mseb');
+        echo <<<HTML
+            <a href="{$seburl}" class="btn" style="background: #28a745;">{$sebbuttontext}</a>
+HTML;
+    }
+    echo <<<HTML
+            <a href="javascript:history.back()" class="btn">{$backbutton}</a>
+        </div>
+    </div>
 </body>
 </html>
 HTML;

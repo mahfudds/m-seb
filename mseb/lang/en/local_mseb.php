@@ -57,7 +57,9 @@ $string['js:warningnotmet'] = 'Warning: The quiz completion requirements have no
 
 // Block messages.
 $string['blocked_generic'] = 'This quiz may only be taken through the official <b>M-SEB</b> app (Android).';
+$string['blocked_ios_seb'] = 'For iOS (iPhone/iPad), this quiz must be taken through the <b>Safe Exam Browser</b> app.';
 $string['blocked_ios'] = 'Sorry, iOS (iPhone/iPad) users are currently blocked for this quiz.';
+$string['blocked_launch_seb'] = 'OPEN IN SAFE EXAM BROWSER';
 $string['blocked_android'] = 'SORRY! This quiz must be taken through the <b>M-SEB</b> app. You are detected as using a regular browser.';
 $string['blocked_pc'] = 'This quiz cannot be taken through a regular laptop browser. Please use <b>Safe Exam Browser (SEB)</b> or the M-SEB app.';
 $string['blocked_title'] = 'ACCESS DENIED';
