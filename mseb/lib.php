@@ -281,15 +281,8 @@ function local_mseb_extend_navigation() {
     $showsebbutton = false;
 
     if ($isios) {
-        if ($isiosseb) {
-            // Inside SEB on iOS, allow but keep JS Guard active as a secondary layer.
-            $injectjs = true; 
-        } else {
-            // Outside SEB on iOS, block and show SEB launch button.
-            $blocked    = true;
-            $messagekey = 'blocked_ios_seb';
-            $showsebbutton = true;
-        }
+        // Allow iOS (Safari/Chrome/SEB) but always inject JS Guard.
+        $injectjs = true;
     } else if ($ismobile) {
     if (!$ismsebapp) {
       $blocked  = true;
