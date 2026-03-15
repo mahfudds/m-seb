@@ -9,8 +9,10 @@
  * @copyright  2024 M-SEB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+require_once(__DIR__ . '/../../config.php');
 
 // Security check: Validate the token to prevent brute-forcing cmids.
+$cmid  = optional_param('id', 0, PARAM_INT);
 $token = optional_param('token', '', PARAM_ALPHANUM);
 $userid = optional_param('u', 0, PARAM_INT);
 $expectedtoken = md5($userid . $cmid . ($CFG->passwordsaltmain ?? 'mseb'));
