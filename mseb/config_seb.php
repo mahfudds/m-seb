@@ -9,11 +9,12 @@
  * @copyright  2024 M-SEB
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 require_once(__DIR__ . '/../../config.php');
 
 // Security check: Validate the token using a consistent salt.
-$cmid  = optional_param('id', 0, PARAM_INT);
-$token = optional_param('token', '', PARAM_ALPHANUM);
+$cmid   = optional_param('id', 0, PARAM_INT);
+$token  = optional_param('token', '', PARAM_ALPHANUM);
 $userid = optional_param('u', 0, PARAM_INT);
 
 // Use a consistent salt for both sides.
@@ -26,7 +27,6 @@ if (empty($token) || $token !== $expectedtoken) {
 }
 
 $cm = get_coursemodule_from_id('quiz', $cmid);
-
 if (!$cm) {
     header('HTTP/1.1 404 Not Found');
     die('M-SEB: Quiz not found.');
@@ -36,34 +36,28 @@ $quizurl = new moodle_url('/mod/quiz/view.php', ['id' => $cmid]);
 $starturl = $quizurl->out(false);
 
 // SEB Configuration XML.
-// Key features: allowAAC=true (Assessment Mode), allowScreenshot=false, allowDictation=false.
+// CRITICAL: allowAAC and lockIPad must be present and set to true for the iOS popup.
 $sebconfig = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>startURL</key>
-    <string>{$starturl}</string>
-
-    <key>sendBrowserExamKey</key>
-    <true/>
-
-    <key>quitPassword</key>
-    <string>mseb123</string>
-
-    <key>allowQuit</key>
-    <false/>
-    <key>allowPreferencesWindow</key>
-    <false/>
-
     <key>allowAAC</key>
     <true/>
     <key>lockIPad</key>
     <true/>
-
+    <key>startURL</key>
+    <string>{$starturl}</string>
+    <key>browserWindowWebView</key>
+    <integer>3</integer>
+    <key>sendBrowserExamKey</key>
+    <true/>
+    <key>allowQuit</key>
+    <false/>
+    <key>quitPassword</key>
+    <string>mseb123</string>
     <key>allowScreenshot</key>
     <false/>
-
     <key>showReloadButton</key>
     <false/>
     <key>showNavigationButtons</key>
@@ -72,18 +66,26 @@ $sebconfig = <<<XML
     <false/>
     <key>showMenuBar</key>
     <false/>
-
     <key>browserViewMode</key>
     <integer>0</integer>
     <key>allowManualResizing</key>
     <false/>
     <key>monitorSecondControl</key>
     <true/>
+    <key>examSessionClearCookiesOnStart</key>
+    <false/>
+    <key>browserWindowAllowReload</key>
+    <false/>
 </dict>
 </plist>
 XML;
 
 $filename = "mseb_quiz_{$cmid}.seb";
+
+// Clean any output before sending headers.
+while (ob_get_level()) {
+    ob_end_clean();
+}
 
 header('Content-Type: application/seb');
 header('Content-Disposition: attachment; filename="' . $filename . '"');
