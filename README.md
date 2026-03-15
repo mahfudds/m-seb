@@ -15,29 +15,27 @@
 - Regular Android browsers are automatically blocked with a clear notification screen
 - Whitelists the M-SEB app via user-agent detection
 
-### 💻 Configurable Desktop Access
+### 💻 Configurable Desktop & iOS Access
 - **Allow regular PC browsers** — optionally let students take quizzes from Chrome, Firefox, etc.
-- **JS Guard for PC/Laptop** — when enabled, applies a penalty timer system if a student switches tabs or minimises the browser window
-- **Safe Exam Browser (SEB) integration** — automatically allows SEB desktop clients
-
-### 📱 iOS Support with Pro Guard
-- **Optional iOS access** — enable or disable iPhone/iPad access per quiz
-- **Unlimited penalty timer** — escalating time penalties for each detected violation (tab switch, app switch)
-- **No auto-submit** — penalties are applied without forcibly ending the attempt
+- **Pro Guard JS Guard** — applies an escalating penalty timer system if a student switches tabs, minimises the browser, or loses window focus.
+- **Safe Exam Browser (SEB) integration** — automatically allows SEB desktop clients.
+- **Persistent Violations** — violation counts are stored in `localStorage`, making them persistent even after page refreshes.
 
 ### ⏱️ Minimum Time Enforcement
-- Set a **minimum working time** (in minutes) before the submit button becomes available
-- Prevents students from rushing through exams
+- Set a **minimum working time** (in minutes) before the submit button becomes available.
+- Prevents students from rushing through exams without any annoying pop-up alerts.
 
 ### 📊 Minimum Answered Percentage
-- Require a **minimum percentage of questions** to be answered before submission is allowed
-- Works with both the quiz navigation panel and the summary table
+- Require a **minimum percentage of questions** to be answered before submission is allowed.
+- Works with both the quiz navigation panel and the summary table.
 
 ### 🛡️ Anti-Cheating Measures
-- **Tab switch detection** — monitors `visibilitychange` events
-- **Anti-translation** — blocks Google Translate overlays during exams
-- **Right-click & clipboard blocking** — prevents copy, cut, and paste operations
-- **Violation counter** — tracks and displays violations with colour-coded severity badges
+- **Tab & App switch detection** — monitors `visibilitychange` events across all platforms.
+- **Split-Screen & Multi-Window blocking** — detects and penalizes if the browser window is resized or put into split-screen mode (logically calculated based on screen ratio).
+- **Focus Loss monitoring** — detects if the user clicks outside the browser or opens other OS overlays.
+- **Anti-translation** — blocks Google Translate overlays during exams.
+- **Right-click & clipboard blocking** — prevents copy, cut, and paste operations.
+- **Violation counter** — tracks and displays violations with colour-coded severity badges.
 
 ---
 

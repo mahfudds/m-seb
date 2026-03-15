@@ -32,8 +32,9 @@ import {get_string} from 'core/str';
  * Initialise the Pro Guard proctoring module.
  *
  * @param {number} quizId   The quiz instance ID.
+ * @param {boolean} isIos  Whether the user is on an iOS device.
  */
-export const init = async(quizId) => {
+export const init = async(quizId, isIos) => {
     // Only run on attempt or view pages.
     if (!/\/mod\/quiz\/(attempt|view)\.php/.test(window.location.pathname)) {
         return;
@@ -80,13 +81,13 @@ export const init = async(quizId) => {
     /**
      * @returns {number} Current violation count.
      */
-    const getViolations = () => parseInt(window.sessionStorage.getItem(storageKey) || '0', 10);
+    const getViolations = () => parseInt(window.localStorage.getItem(storageKey) || '0', 10);
 
     /**
      * @param {number} v New violation count.
      */
     const setViolations = (v) => {
-        window.sessionStorage.setItem(storageKey, String(v));
+        window.localStorage.setItem(storageKey, String(v));
         updateMonitor(v);
     };
 
@@ -229,7 +230,7 @@ export const init = async(quizId) => {
         }
     }, true);
 
-    // Detect tab switching / minimising.
+    // Detect tab switching / minimising / app switching.
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
             hiddenAt = Date.now();
@@ -248,6 +249,33 @@ export const init = async(quizId) => {
             }, 1000);
         }
     });
+
+    // Detect loss of focus (clicking outside, multi-window, status bar).
+    window.addEventListener('blur', () => {
+        if (!navSafe && !ignoreBlur && !isPenaltyRunning) {
+            addViolation(strings.leavingExam);
+        }
+    });
+
+    /**
+     * Detect split-screen or small windowed mode.
+     */
+    const checkWindowSize = () => {
+        if (navSafe || isPenaltyRunning) {
+            return;
+        }
+        // Thresholds: if window is less than 85% of available screen size, assume split/windowed.
+        const widthRatio = window.innerWidth / window.screen.availWidth;
+        const heightRatio = window.innerHeight / window.screen.availHeight;
+
+        if (widthRatio < 0.85 || heightRatio < 0.85) {
+            addViolation(strings.leavingExam);
+        }
+    };
+
+    // Check on resize and periodically.
+    window.addEventListener('resize', checkWindowSize);
+    setTimeout(checkWindowSize, 3000); // Grace period after load.
 
     // Block right-click and clipboard operations.
     document.addEventListener('contextmenu', (e) => e.preventDefault());

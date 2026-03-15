@@ -123,11 +123,6 @@ export const init = (timeCreated, minTimeMins, minAnsweredPct, serverTimeAtLoad)
         input[name="next"][value*="Finish"], input[name="next"][value*="finish"] {
             display: none !important; pointer-events: none !important; visibility: hidden !important;
         }
-        #mseb-warning-box {
-            display: block; background: #f8d7da; border: 2px solid #f5c6cb; color: #721c24;
-            padding: 15px; margin-bottom: 20px; border-radius: 6px; font-size: 16px;
-            font-weight: bold; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
     `;
 
     if (minTimeSecs > 0 || minAnsweredPct > 0) {
@@ -163,9 +158,6 @@ export const init = (timeCreated, minTimeMins, minAnsweredPct, serverTimeAtLoad)
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
-
-                const warningStr = await get_string('js:warningnotmet', 'local_mseb');
-                window.alert(warningStr);
             }
         }
     }, true);

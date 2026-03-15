@@ -305,7 +305,7 @@ function local_mseb_extend_navigation() {
         $PAGE->requires->js_call_amd(
             'local_mseb/proguard',
             'init',
-            [$quizid]
+            [$quizid, $isios]
         );
     }
 }
