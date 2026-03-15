@@ -18,13 +18,13 @@ $userid = optional_param('u', 0, PARAM_INT);
 $expectedtoken = md5($userid . $cmid . ($CFG->passwordsaltmain ?? 'mseb'));
 
 if ($token !== $expectedtoken) {
-    print_error('accessdenied', 'local_mseb');
+    throw new moodle_exception('accessdenied', 'local_mseb');
 }
 
 $cm = get_coursemodule_from_id('quiz', $cmid);
 
 if (!$cm) {
-    print_error('invalidcoursemodule');
+    throw new moodle_exception('invalidcoursemodule');
 }
 
 $quizurl = new moodle_url('/mod/quiz/view.php', ['id' => $cmid]);
