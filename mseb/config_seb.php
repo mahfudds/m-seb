@@ -10,11 +10,16 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__ . '/../../config.php');
-// require_login(); // Removed to allow SEB app to fetch config without cookie sharing issues.
+// Security check: Validate the token to prevent brute-forcing cmids.
+$token = optional_param('token', '', PARAM_ALPHANUM);
+$userid = optional_param('u', 0, PARAM_INT);
+$expectedtoken = md5($userid . $cmid . ($CFG->passwordsaltmain ?? 'mseb'));
 
-$cmid = required_param('id', PARAM_INT);
-$cm   = get_coursemodule_from_id('quiz', $cmid);
+if ($token !== $expectedtoken) {
+    print_error('accessdenied', 'local_mseb');
+}
+
+$cm = get_coursemodule_from_id('quiz', $cmid);
 
 if (!$cm) {
     print_error('invalidcoursemodule');
@@ -32,26 +37,26 @@ $sebconfig = <<<XML
 <dict>
     <key>startURL</key>
     <string>{$starturl}</string>
+    <key>allowQuit</key>
+    <false/>
+    <key>showReloadButton</key>
+    <false/>
+    <key>showNavigationButtons</key>
+    <false/>
+    <key>sendBrowserExamKey</key>
+    <true/>
     <key>allowAAC</key>
     <true/>
     <key>allowScreenshot</key>
     <false/>
     <key>allowPreferencesWindow</key>
     <false/>
-    <key>allowQuit</key>
-    <true/>
     <key>exitKeyCombinations</key>
     <false/>
     <key>showTaskBar</key>
     <false/>
     <key>browserViewMode</key>
     <integer>0</integer>
-    <key>sendBrowserExamKey</key>
-    <false/>
-    <key>showReloadButton</key>
-    <true/>
-    <key>showNavigationButtons</key>
-    <true/>
     <key>lockIPad</key>
     <true/>
     <key>allowManualResizing</key>
