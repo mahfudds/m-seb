@@ -282,8 +282,8 @@ function local_mseb_extend_navigation() {
 
     if ($isios) {
         if ($isiosseb) {
-            // Already inside SEB on iOS, allow.
-            $injectjs = false; // SEB is native-locked, no need for JS penalty.
+            // Inside SEB on iOS, allow but keep JS Guard active as a secondary layer.
+            $injectjs = true; 
         } else {
             // Outside SEB on iOS, block and show SEB launch button.
             $blocked    = true;
