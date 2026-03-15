@@ -235,7 +235,7 @@ export const init = async(quizId, isIos) => {
     if (document.visibilityState === 'hidden') {
       hiddenAt = Date.now();
       ignoreBlur = true;
-      if (!navSafe && !isIos) {
+      if (!navSafe) {
         addViolation(strings.leavingExam);
       }
     } else if (document.visibilityState === 'visible' && hiddenAt) {
@@ -252,7 +252,7 @@ export const init = async(quizId, isIos) => {
 
   // Detect loss of focus (clicking outside, multi-window, status bar).
   window.addEventListener('blur', () => {
-    if (!navSafe && !ignoreBlur && !isPenaltyRunning && !isIos) {
+    if (!navSafe && !ignoreBlur && !isPenaltyRunning) {
       addViolation(strings.leavingExam);
     }
   });
