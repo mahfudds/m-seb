@@ -8,25 +8,25 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Language strings for local_mseb.
  *
- * @package    local_mseb
- * @copyright  2024 M-SEB Kemenag
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package  local_mseb
+ * @copyright 2024 M-SEB
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 // Plugin metadata.
 $string['pluginname'] = 'M-SEB Quiz Lock';
-$string['plugindescription'] = 'M-SEB (Moodle Secure Exam Browser) enforces secure quiz-taking on Android via the M-SEB Kemenag app, with optional iOS and PC JS-based proctoring, minimum time enforcement, and minimum answered question requirements.';
+$string['plugindescription'] = 'M-SEB (Moodle Secure Exam Browser) enforces secure quiz-taking on Android via the M-SEB app, with optional iOS and PC JS-based proctoring, minimum time enforcement, and minimum answered question requirements.';
 
 // Privacy API.
 $string['privacy:metadata:local_mseb'] = 'The M-SEB plugin stores quiz configuration settings. It does not store any personal user data.';
@@ -56,9 +56,9 @@ $string['js:autotranslate'] = 'Automatic translation detected';
 $string['js:warningnotmet'] = 'Warning: The quiz completion requirements have not been met yet!';
 
 // Block messages.
-$string['blocked_generic'] = 'This quiz may only be taken through the official <b>M-SEB Kemenag</b> app (Android).';
+$string['blocked_generic'] = 'This quiz may only be taken through the official <b>M-SEB</b> app (Android).';
 $string['blocked_ios'] = 'Sorry, iOS (iPhone/iPad) users are currently blocked for this quiz.';
-$string['blocked_android'] = 'SORRY! This quiz must be taken through the <b>M-SEB Kemenag</b> app. You are detected as using a regular browser.';
+$string['blocked_android'] = 'SORRY! This quiz must be taken through the <b>M-SEB</b> app. You are detected as using a regular browser.';
 $string['blocked_pc'] = 'This quiz cannot be taken through a regular laptop browser. Please use <b>Safe Exam Browser (SEB)</b> or the M-SEB app.';
 $string['blocked_title'] = 'ACCESS DENIED';
 $string['blocked_back'] = 'GO BACK';

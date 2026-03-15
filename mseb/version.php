@@ -8,24 +8,24 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Version information for local_mseb.
  *
- * @package    local_mseb
- * @copyright  2024 M-SEB Kemenag
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package  local_mseb
+ * @copyright 2024 M-SEB 
+ * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_mseb';
-$plugin->version   = 2026031400;
-$plugin->requires  = 2022112800; // Moodle 4.1+.
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '22.0';
+$plugin->version  = 2026031400;
+$plugin->requires = 2022112800; // Moodle 4.1+.
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release  = '22.0';

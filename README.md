@@ -4,14 +4,14 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![CONTRIB-10360](https://img.shields.io/badge/Tracker-CONTRIB--10360-blue)](https://tracker.moodle.org/browse/CONTRIB-10360)
 
-**M-SEB (Moodle Secure Exam Browser)** is a Moodle local plugin that enforces a secure, locked-down quiz environment. It ensures students can only access quizzes through the official **M-SEB Kemenag** Android application, while providing configurable JS-based proctoring for iOS and desktop platforms.
+**M-SEB (Moodle Secure Exam Browser)** is a Moodle local plugin that enforces a secure, locked-down quiz environment. It ensures students can only access quizzes through the official **M-SEB ** Android application, while providing configurable JS-based proctoring for iOS and desktop platforms.
 
 ---
 
 ## ✨ Features
 
 ### 🔒 Android Browser Lock
-- Forces students to use the official **M-SEB Kemenag** Android app for quiz access
+- Forces students to use the official **M-SEB ** Android app for quiz access
 - Regular Android browsers are automatically blocked with a clear notification screen
 - Whitelists the M-SEB app via user-agent detection
 
@@ -90,20 +90,20 @@ M-SEB settings are configured **per quiz** through the standard quiz editing for
 ```
 local/mseb/
 ├── amd/src/
-│   ├── mintime.js          # ES6 AMD: minimum time & answered enforcement
-│   └── proguard.js         # ES6 AMD: Pro Guard proctoring (iOS/PC)
+│  ├── mintime.js     # ES6 AMD: minimum time & answered enforcement
+│  └── proguard.js     # ES6 AMD: Pro Guard proctoring (iOS/PC)
 ├── backup/moodle2/
-│   ├── backup_local_mseb_plugin.class.php
-│   └── restore_local_mseb_plugin.class.php
+│  ├── backup_local_mseb_plugin.class.php
+│  └── restore_local_mseb_plugin.class.php
 ├── classes/privacy/
-│   └── provider.php        # Privacy API (null_provider)
+│  └── provider.php    # Privacy API (null_provider)
 ├── db/
-│   ├── install.xml          # Database schema
-│   └── upgrade.php          # Database upgrade steps
+│  ├── install.xml     # Database schema
+│  └── upgrade.php     # Database upgrade steps
 ├── lang/en/
-│   └── local_mseb.php       # English language strings
-├── lib.php                  # Core callbacks & navigation hooks
-└── version.php              # Plugin version metadata
+│  └── local_mseb.php    # English language strings
+├── lib.php         # Core callbacks & navigation hooks
+└── version.php       # Plugin version metadata
 ```
 
 ### How It Works
@@ -111,9 +111,9 @@ local/mseb/
 1. **Form Integration** — `local_mseb_coursemodule_standard_elements()` injects M-SEB settings into the quiz editing form
 2. **Data Persistence** — `local_mseb_coursemodule_edit_post_actions()` saves settings to the `local_mseb` database table
 3. **Runtime Enforcement** — `local_mseb_extend_navigation()` intercepts quiz page loads and:
-   - Checks user-agent to determine platform (Android, iOS, PC)
-   - Blocks unauthorised browsers with a full-page error screen
-   - Loads the appropriate AMD JavaScript module for proctoring
+  - Checks user-agent to determine platform (Android, iOS, PC)
+  - Blocks unauthorised browsers with a full-page error screen
+  - Loads the appropriate AMD JavaScript module for proctoring
 4. **Backup/Restore** — Settings are preserved when courses or quiz activities are backed up and restored
 
 ---
@@ -128,7 +128,7 @@ This plugin implements the Moodle Privacy API as a **null provider**. It stores 
 
 This plugin is licensed under the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html).
 
-Copyright © 2024 M-SEB Kemenag
+Copyright © 2024 M-SEB 
 
 ---
 
