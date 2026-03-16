@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Dynamic SEB configuration generator for Assessment Mode (iOS/PC).
  *
@@ -23,13 +38,13 @@ $expectedtoken = md5($userid . '|' . $cmid . '|' . $salt);
 
 if (empty($token) || $token !== $expectedtoken) {
     header('HTTP/1.1 403 Forbidden');
-    die('M-SEB: Access Denied. Invalid security token.');
+    die(get_string('error_access_denied', 'local_mseb'));
 }
 
 $cm = get_coursemodule_from_id('quiz', $cmid);
 if (!$cm) {
     header('HTTP/1.1 404 Not Found');
-    die('M-SEB: Quiz not found.');
+    die(get_string('error_quiz_not_found', 'local_mseb'));
 }
 
 $quizurl = new moodle_url('/mod/quiz/view.php', ['id' => $cmid]);

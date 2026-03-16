@@ -38,7 +38,7 @@ class restore_local_mseb_plugin extends restore_local_plugin {
     $paths = [];
 
     $paths[] = new restore_path_element(
-      'local_mseb_settings',
+      'mseb',
       $this->get_pathfor('/local_mseb_settings/mseb')
     );
 
@@ -50,7 +50,7 @@ class restore_local_mseb_plugin extends restore_local_plugin {
    *
    * @param array $data The data from the backup file.
    */
-  public function process_local_mseb_settings($data) {
+  public function process_mseb($data) {
     global $DB;
 
     $data = (object) $data;
