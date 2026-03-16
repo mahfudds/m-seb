@@ -12,34 +12,37 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Database upgrade steps for local_mseb.
  *
  * @package  local_mseb
- * @copyright 2024 M-SEB 
+ * @copyright 2024 M-SEB
  * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * Upgrade the local_mseb plugin.
+ *
+ * @param int $oldversion The version we are upgrading from.
+ * @return bool True on success.
+ */
+function xmldb_local_mseb_upgrade($oldversion) {
+    global $DB;
 
-function xmldb_local_mseb_upgrade($oldversion)
-{
-  global $DB;
+    $dbman = $DB->get_manager();
 
-  $dbman = $DB->get_manager();
+    if ($oldversion < 2024030198) {
+        $table = new xmldb_table('local_mseb');
 
-  if ($oldversion < 2024030198) {
-    $table = new xmldb_table('local_mseb');
+        $field = new xmldb_field('minanswered', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'mintime');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-    $field = new xmldb_field('minanswered', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '0', 'mintime');
-    if (!$dbman->field_exists($table, $field)) {
-      $dbman->add_field($table, $field);
+        upgrade_plugin_savepoint(true, 2024030198, 'local', 'mseb');
     }
 
-    upgrade_plugin_savepoint(true, 2024030198, 'local', 'mseb');
-  }
-
-  return true;
+    return true;
 }

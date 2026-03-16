@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Dynamic SEB configuration generator for Assessment Mode (iOS/PC).
@@ -32,6 +32,15 @@ $cmid   = optional_param('id', 0, PARAM_INT);
 $token  = optional_param('token', '', PARAM_ALPHANUM);
 $userid = optional_param('u', 0, PARAM_INT);
 
+$cm = get_coursemodule_from_id('quiz', $cmid);
+if (!$cm) {
+    header('HTTP/1.1 404 Not Found');
+    die(get_string('error_quiz_not_found', 'local_mseb'));
+}
+
+// Ensure user is logged in and has access to the course.
+require_login($cm->course, false, $cm);
+
 // Use a consistent salt for both sides.
 $salt = $CFG->passwordsaltmain ?? 'mseb_default_salt';
 $expectedtoken = md5($userid . '|' . $cmid . '|' . $salt);
@@ -41,17 +50,10 @@ if (empty($token) || $token !== $expectedtoken) {
     die(get_string('error_access_denied', 'local_mseb'));
 }
 
-$cm = get_coursemodule_from_id('quiz', $cmid);
-if (!$cm) {
-    header('HTTP/1.1 404 Not Found');
-    die(get_string('error_quiz_not_found', 'local_mseb'));
-}
-
 $quizurl = new moodle_url('/mod/quiz/view.php', ['id' => $cmid]);
 $starturl = $quizurl->out(false);
 
 // SEB Configuration XML.
-// CRITICAL: allowAAC and lockIPad must be present and set to true for the iOS popup.
 $sebconfig = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -97,7 +99,6 @@ XML;
 
 $filename = "mseb_quiz_{$cmid}.seb";
 
-// Clean any output before sending headers.
 while (ob_get_level()) {
     ob_end_clean();
 }

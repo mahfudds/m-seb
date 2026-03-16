@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Privacy API implementation for local_mseb.
@@ -21,20 +21,11 @@
  * It does not store, process, or export any personal user data.
  *
  * @package  local_mseb
- * @copyright 2024 M-SEB 
+ * @copyright 2024 M-SEB
  * @license  http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace local_mseb\privacy;
-
-use core_privacy\local\metadata\collection;
-use core_privacy\local\metadata\provider as metadata_provider;
-use core_privacy\local\request\approved_contextlist;
-use core_privacy\local\request\approved_userlist;
-use core_privacy\local\request\contextlist;
-use core_privacy\local\request\userlist;
-use core_privacy\local\request\plugin\provider as plugin_provider;
-use core_privacy\local\request\core_userlist_provider;
 
 /**
  * Privacy provider for local_mseb.
@@ -42,15 +33,13 @@ use core_privacy\local\request\core_userlist_provider;
  * This plugin only stores quiz configuration settings (enabled, allowpc, etc.)
  * keyed by quiz ID. No personal data is stored.
  */
-class provider implements
-  \core_privacy\local\metadata\null_provider {
-
-  /**
-   * Returns a reason why this plugin does not store any personal data.
-   *
-   * @return string The language string identifier for the reason.
-   */
-  public static function get_reason(): string {
-    return 'privacy:metadata:local_mseb';
-  }
+class provider implements \core_privacy\local\metadata\null_provider {
+    /**
+     * Returns a reason why this plugin does not store any personal data.
+     *
+     * @return string The language string identifier for the reason.
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata:local_mseb';
+    }
 }
