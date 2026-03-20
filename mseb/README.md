@@ -11,17 +11,17 @@ M-SEB adalah plugin Moodle yang dirancang untuk mengamankan pengerjaan kuis di b
 - **Minimum Answered Questions**: Mencegah pengumpulan kuis jika persentase soal yang dijawab belum mencapai target.
 - **Multi-Language Support**: Mendukung Bahasa Indonesia dan Bahasa Inggris secara penuh.
 
-## Update Terbaru (2026-03-15)
+## Update Terbaru (2026-03-20)
 
-1.  **Direct JS Injection**: Menggantikan sistem AMD untuk perlindungan iOS agar aktif seketika (instan) tanpa jeda loading.
-2.  **Persistent Penalty**: Sanksi hukuman waktu kini disimpan di `localStorage`. Jika siswa refresh halaman atau tutup browser, waktu hukuman tetap berjalan (tidak reset).
-3.  **Refined iOS Logic**: Menggunakan algoritma selisih waktu (`time-diff`) untuk deteksi fokus yang lebih akurat di Safari iOS.
-4.  **Localization**: Penyesuaian seluruh teks pengaturan kuis dan pesan error ke dalam Bahasa Indonesia dan Inggris.
-5.  **Version Bump**: Update versi plugin ke `2026031500`.
+1.  **AMD Build Fix**: Memperbaiki build artifact AMD (`amd/build/`) yang sebelumnya tidak dikompilasi dengan benar melalui pipeline grunt Moodle (Babel + UglifyJS). Build kini menghasilkan file `.min.js` dan `.min.js.map` yang sesuai standar Moodle Prechecker.
+2.  **Persistent Penalty**: Sanksi hukuman waktu disimpan di `localStorage` — tetap berjalan meski siswa refresh atau tutup browser.
+3.  **Minimum Time & Answered Enforcement**: Mencegah submit kuis sebelum waktu minimal dan persentase jawaban terpenuhi.
+4.  **Multi-Language Support**: Mendukung penuh Bahasa Indonesia dan Bahasa Inggris.
+5.  **Version Bump**: Update versi plugin ke `2026032001` (release `23.3`).
 
 ## Instalasi
 
-1.  Ekstrak `mseb.zip`.
+1.  Ekstrak `local_mseb_2026032001.zip`.
 2.  Unggah folder `mseb` ke direktori `/local/` di instalasi Moodle Anda.
 3.  Masuk ke Moodle sebagai Admin dan lakukan proses upgrade database.
 4.  Aktifkan dan atur melalui pengaturan di setiap kuis.
