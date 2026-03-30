@@ -13,14 +13,15 @@ M-SEB adalah plugin Moodle yang dirancang untuk mengamankan pengerjaan kuis di b
 
 ## Update Terbaru (2026-03-31)
 
-1.  **Desktop Mode Detection**: Menambahkan deteksi cerdas untuk memblokir "Situs Desktop" (Desktop Mode) pada browser mobile yang mencoba melewati proteksi M-SEB.
-2.  **Independent Pro Guard**: Modul JS Guard (Pro Guard) kini dapat tetap aktif meskipun Kunci M-SEB (Android Lock) dinonaktifkan, selama proteksi JS diizinkan.
-3.  **UI/UX Improvement**: Halaman peringatan pemblokiran yang lebih jelas dan informatif bagi siswa.
-4.  **Version Bump**: Update versi plugin ke `2026033101` (release `23.5`).
+1.  **Protocol Fix (HTTP/2)**: Memperbaiki kesalahan `ERR_HTTP2_PROTOCOL_ERROR` pada beberapa server dengan menggunakan penanganan header modern (`http_response_code`).
+2.  **Desktop Mode Detection**: Menambahkan deteksi cerdas untuk memblokir "Situs Desktop" (Desktop Mode) pada browser mobile yang mencoba melewati proteksi M-SEB.
+3.  **Independent Pro Guard**: Modul JS Guard (Pro Guard) kini dapat tetap aktif meskipun Kunci M-SEB (Android Lock) dinonaktifkan, selama proteksi JS diizinkan.
+4.  **UI/UX Improvement**: Halaman peringatan pemblokiran yang lebih jelas dan informatif bagi siswa.
+5.  **Version Bump**: Update versi plugin ke `2026033102` (release `23.5`).
 
 ## Instalasi
 
-1.  Ekstrak `local_mseb_2026033101.zip`.
+1.  Ekstrak `local_mseb_2026033102.zip`.
 2.  Unggah folder `mseb` ke direktori `/local/` di instalasi Moodle Anda.
 3.  Masuk ke Moodle sebagai Admin dan lakukan proses upgrade database.
 4.  Aktifkan dan atur melalui pengaturan di setiap kuis.
