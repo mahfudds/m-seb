@@ -28,16 +28,78 @@ import {get_string as getString} from 'core/str';
  * Initialise the ProGuard enforcement.
  *
  * @param {number} quizid The quiz ID.
+ * @param {boolean} isios Is iOS device.
+ * @param {boolean} ismseb Is M-SEB app.
+ * @param {boolean} msebenabled Is M-SEB Lock enabled.
  */
-export const init = async (quizid) => {
+export const init = async (quizid, isios, ismseb, msebenabled) => {
     // 1. Instant Check.
-    if (!/\/mod\/quiz\/(attempt|view)\.php/.test(location.pathname)) {
+    const path = location.pathname;
+    if (!/\/mod\/quiz\/(attempt|view|summary)\.php/.test(path)) {
         return;
     }
+    const isAttemptPage = /\/mod\/quiz\/(attempt|summary)\.php/.test(path);
+    
     if (window.MSEB_V17_ACTIVE) {
         return;
     }
     window.MSEB_V17_ACTIVE = true;
+
+    // A. Desktop Mode Detection & Mobile Bypass Prevention.
+    const checkBypass = async () => {
+        if (ismseb) return;
+        
+        let isMobileDevice = false;
+        let isDesktopMode = false;
+
+        // Detection Heuristics.
+        const ua = navigator.userAgent;
+        const platform = navigator.platform;
+        const touches = navigator.maxTouchPoints || 0;
+
+        // 1. UserAgentData (Most reliable for modern Chrome).
+        if (navigator.userAgentData) {
+            isMobileDevice = navigator.userAgentData.mobile;
+            const platformName = navigator.userAgentData.platform;
+            // If UAData says NOT mobile but platform is Android/iOS, it's Desktop Mode.
+            if (!isMobileDevice && (platformName === 'Android' || platformName === 'iOS')) {
+                isDesktopMode = true;
+            }
+        }
+
+        // 2. Fallbacks for older browsers or "Desktop Mode" trickery.
+        if (!isMobileDevice && !isDesktopMode) {
+            // Android Desktop Mode usually reports "Linux x86_64" in UA, but has touches.
+            if (touches > 1 && /Linux/i.test(platform)) {
+                isMobileDevice = true;
+                isDesktopMode = true;
+            }
+            // iPad Desktop Mode reports "MacIntel" but has touches.
+            if (touches > 2 && /Macintosh/i.test(ua)) {
+                isMobileDevice = true;
+                isDesktopMode = true;
+            }
+        }
+
+        // Action.
+        if (msebenabled && (isMobileDevice || isDesktopMode)) {
+            const strDesktop = await getString('js:desktop_mode', 'local_mseb');
+            const strMobile = await getString('js:is_mobile_blocked', 'local_mseb');
+            
+            document.body.innerHTML = `
+                <div style="background:#111;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;">
+                    <div style="border:3px solid #e00;padding:40px;border-radius:15px;max-width:450px;background:#222;box-shadow:0 10px 30px rgba(224,60,49,0.4);">
+                        <h1 style="color:#e03c31;margin-bottom:20px;font-size:28px;">🛑 AKSES DIBLOKIR</h1>
+                        <p style="line-height:1.6;color:#ddd;margin-bottom:30px;font-size:16px;">${isDesktopMode ? strDesktop : strMobile}</p>
+                        <a href='javascript:location.reload()' style='background:#e03c31;color:#fff;padding:12px 30px;border-radius:5px;text-decoration:none;font-weight:bold;display:inline-block;'>MUAT ULANG HALAMAN</a>
+                    </div>
+                </div>
+            `;
+            throw new Error("M-SEB: Mobile bypass detected and blocked.");
+        }
+    };
+
+    await checkBypass();
 
     // Load strings.
     const strViolation = await getString('js:violation', 'local_mseb');
@@ -56,7 +118,7 @@ export const init = async (quizid) => {
     let ispenaltyshowing = false;
 
     // Helper Storage.
-    const getv = () => parseInt(localStorage.getItem(storagekey) || '0', 10);
+    const getv = () => (isAttemptPage ? parseInt(localStorage.getItem(storagekey) || '0', 10) : 0);
 
     /**
      * Update the monitor UI with violation count.

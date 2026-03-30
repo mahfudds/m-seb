@@ -196,48 +196,62 @@ function local_mseb_extend_navigation() {
         }
     }
 
-    // 2. M-SEB Lock & ProGuard Logic.
-    if ($config->enabled) {
-        $useragent = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
-        $ismseb = (strpos($useragent, 'm-seb-android') !== false);
-        $isseb  = (strpos($useragent, 'seb') !== false);
-        $isios  = (strpos($useragent, 'iphone') !== false) ||
-                  (strpos($useragent, 'ipad') !== false) ||
-                  (strpos($useragent, 'ipod') !== false) ||
-                  (strpos($useragent, 'macintosh') !== false && strpos($useragent, 'mobile') !== false);
-        $ismobile = $isios || (strpos($useragent, 'android') !== false);
+    // 2. M-SEB Lock & ProGuard Logic (Enhanced Protection).
+    $useragent = strtolower($_SERVER['HTTP_USER_AGENT'] ?? '');
+    $ismseb = (strpos($useragent, 'm-seb-android') !== false);
+    $isseb  = (strpos($useragent, 'seb') !== false);
+    $isios  = (strpos($useragent, 'iphone') !== false) ||
+              (strpos($useragent, 'ipad') !== false) ||
+              (strpos($useragent, 'ipod') !== false) ||
+              (strpos($useragent, 'macintosh') !== false && strpos($useragent, 'mobile') !== false);
+    $isandroid = (strpos($useragent, 'android') !== false);
 
-        $blocked = false;
-        $inject = false;
-        $reason = "";
+    $blocked = false;
+    $inject = false;
+    $reason = "";
 
-        if ($isios) {
-            if ($config->allowios) {
-                $inject = true;
-            } else {
-                $blocked = true;
-                $reason = "blocked_ios_seb";
-            }
-        } else if ($ismobile) {
-            if (!$ismseb) {
-                $blocked = true;
-                $reason = "blocked_android";
-            }
+    if ($isandroid) {
+        // Force M-SEB app if enabled.
+        if ($config->enabled && !$ismseb) {
+            $blocked = true;
+            $reason = "blocked_android";
+        }
+    } else if ($isios) {
+        // iOS handling.
+        if ($config->allowios) {
+            $inject = true;
         } else {
-            // PC.
-            if (!$config->allowpc && !$isseb) {
-                $blocked = true;
-                $reason = "blocked_pc";
-            } else if ($config->protectpc) {
-                $inject = true;
-            }
+            $blocked = true;
+            $reason = "blocked_ios_seb";
         }
+    } else {
+        // PC handling.
+        if (!$config->allowpc && !$isseb) {
+            $blocked = true;
+            $reason = "blocked_pc";
+        }
+    }
 
-        if ($blocked) {
-            local_mseb_show_blocked_page($reason);
-        } else if ($inject && (strpos($script, 'attempt.php') !== false || strpos($script, 'summary.php') !== false)) {
-            $PAGE->requires->js_call_amd('local_mseb/proguard', 'init', [(int) $quizid, (bool) $isios]);
+    // Pro Guard Injection Logic:
+    // - Inject if protectpc is ON (Independent protection).
+    // - Inject if enabled is ON (To detect "Desktop Mode" bypassers).
+    // - Inject if it's an iOS device being allowed.
+    if (!$blocked) {
+        if ($config->protectpc || $config->enabled || ($isios && $config->allowios)) {
+            $inject = true;
         }
+    }
+
+    if ($blocked) {
+        local_mseb_show_blocked_page($reason);
+    } else if ($inject && (strpos($script, 'attempt.php') !== false || strpos($script, 'summary.php') !== false || strpos($script, 'view.php') !== false)) {
+        // Initialize ProGuard with extended parameters.
+        $PAGE->requires->js_call_amd('local_mseb/proguard', 'init', [
+            (int) $quizid,
+            (bool) $isios,
+            (bool) $ismseb,
+            (bool) $config->enabled
+        ]);
     }
 }
 
@@ -250,7 +264,7 @@ function local_mseb_show_blocked_page($key) {
     while (ob_get_level()) {
         ob_end_clean();
     }
-    header("HTTP/1.1 403 Forbidden");
+    http_response_code(403);
 
     $msg = get_string($key, 'local_mseb');
     $title = get_string('blocked_locked', 'local_mseb');

@@ -34,7 +34,7 @@ $userid = optional_param('u', 0, PARAM_INT);
 
 $cm = get_coursemodule_from_id('quiz', $cmid);
 if (!$cm) {
-    header('HTTP/1.1 404 Not Found');
+    http_response_code(404);
     die(get_string('error_quiz_not_found', 'local_mseb'));
 }
 
@@ -46,7 +46,7 @@ $salt = $CFG->passwordsaltmain ?? 'mseb_default_salt';
 $expectedtoken = md5($userid . '|' . $cmid . '|' . $salt);
 
 if (empty($token) || $token !== $expectedtoken) {
-    header('HTTP/1.1 403 Forbidden');
+    http_response_code(403);
     die(get_string('error_access_denied', 'local_mseb'));
 }
 
