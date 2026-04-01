@@ -35,9 +35,16 @@ import {get_string as getString} from 'core/str';
  * @param {number} navsafetimeout Navigation safety timeout in seconds.
  */
 export const init = async (quizid, isios, ismseb, msebenabled, facerecognition, navsafetimeout) => {
-    // 0. Update App State if M-SEB.
-    if (ismseb && window.Android && window.Android.setFaceRecognition) {
-        window.Android.setFaceRecognition(facerecognition);
+    if (ismseb && window.Android) {
+        if (window.Android.setFaceRecognition) {
+            // Explicitly cast to boolean for the Android Bridge
+            const enabled = (facerecognition === true || facerecognition === 1 || facerecognition === "1");
+            window.Android.setFaceRecognition(enabled);
+            console.log("M-SEB: Face Recognition Bridge call: " + enabled);
+        }
+        if (window.Android.setNavSafeTimeout) {
+            window.Android.setNavSafeTimeout(parseInt(navsafetimeout || 60, 10));
+        }
     }
 
     // 1. Instant Check.
@@ -119,7 +126,13 @@ export const init = async (quizid, isios, ismseb, msebenabled, facerecognition, 
     const attemptid = new URLSearchParams(location.search).get('attempt') || '0';
     const storagekey = `mseb_v17_viol_${quizid}_${attemptid}`;
     const penaltykey = `${storagekey}_end`;
-    let navsafe = false;
+    // Initial grace period for page load settling.
+    let navsafe = true;
+    setTimeout(() => {
+        navsafe = false;
+        console.log("M-SEB: Initial grace period ended.");
+    }, 10000); // 10 seconds of safety on page start
+
     let blurat = 0;
     let ignoreblur = false;
     let ispenaltyshowing = false;
@@ -258,20 +271,42 @@ export const init = async (quizid, isios, ismseb, msebenabled, facerecognition, 
     }, 1500);
 
     // Nav Safe (Legit Klik).
+    let longNavSafeActive = false;
     document.addEventListener('click', (e) => {
-        const t = e.target.closest('a, button, input[type="submit"], .qnbutton');
+        // Mode 1: Singkat (Untuk interaksi biasa — misal: Klik gambar, pilih jawaban)
+        navsafe = true;
+        if (ismseb && window.Android && window.Android.triggerNavSafe) {
+            window.Android.triggerNavSafe();
+        }
+        
+        // Timer singkat (10 detik) untuk interaksi biasa
+        setTimeout(() => {
+            // Hanya kembalikan ke false jika tidak ada navsafe panjang yang aktif
+            if (!longNavSafeActive) {
+                navsafe = false;
+            }
+        }, 10000);
+
+        // Mode 2: Panjang (Untuk navigasi soal — klik tombol/link)
+        const t = e.target.closest('a, button, input[type="submit"], .qnbutton, label');
         if (t) {
-            navsafe = true;
-            // Gunakan nilai dari plugin (dalam milidetik).
+            longNavSafeActive = true;
+            // Tingkatkan batas minimum dari plugin menjadi 120 detik jika koneksi ekstrem lambat
+            const timeout = Math.max(navsafetimeout || 60, 120);
             setTimeout(() => {
                 navsafe = false;
-            }, (navsafetimeout || 60) * 1000); 
+                longNavSafeActive = false;
+            }, timeout * 1000); 
         }
     }, true);
-
+    
     // Kunci status navigasi aman saat halaman mulai berpindah (Unload).
     window.addEventListener('beforeunload', () => {
         navsafe = true;
+        longNavSafeActive = true;
+        if (ismseb && window.Android && window.Android.triggerNavSafe) {
+            window.Android.triggerNavSafe();
+        }
     });
 
 
