@@ -44,5 +44,23 @@ function xmldb_local_mseb_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2024030198, 'local', 'mseb');
     }
 
+    if ($oldversion < 2026040101) {
+        $table = new xmldb_table('local_mseb');
+
+        // Add 'facerecognition' field.
+        $field = new xmldb_field('facerecognition', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'minanswered');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Add 'navsafetimeout' field.
+        $field = new xmldb_field('navsafetimeout', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '60', 'facerecognition');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        upgrade_plugin_savepoint(true, 2026040101, 'local', 'mseb');
+    }
+
     return true;
 }

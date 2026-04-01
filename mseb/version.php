@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_mseb';
-$plugin->version   = 2026033102;
+$plugin->version   = 2026040101;
 $plugin->requires  = 2022112800; // Moodle 4.1+.
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = '23.5';

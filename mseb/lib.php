@@ -93,6 +93,25 @@ function local_mseb_coursemodule_standard_elements($formwrapper, $mform) {
         $mform->addHelpButton('mseb_minanswered', 'mseb_minanswered', 'local_mseb');
         $mform->setType('mseb_minanswered', PARAM_INT);
         $mform->setDefault('mseb_minanswered', $config ? $config->minanswered : 0);
+
+        $mform->addElement(
+            'advcheckbox',
+            'mseb_facerecognition',
+            get_string('mseb_facerecognition', 'local_mseb'),
+            get_string('mseb_facerecognition_desc', 'local_mseb')
+        );
+        $mform->setType('mseb_facerecognition', PARAM_INT);
+        $mform->setDefault('mseb_facerecognition', $config ? $config->facerecognition : 0);
+
+        $mform->addElement(
+            'text',
+            'mseb_navsafetimeout',
+            get_string('mseb_navsafetimeout', 'local_mseb'),
+            ['size' => '5']
+        );
+        $mform->addHelpButton('mseb_navsafetimeout', 'mseb_navsafetimeout', 'local_mseb');
+        $mform->setType('mseb_navsafetimeout', PARAM_INT);
+        $mform->setDefault('mseb_navsafetimeout', $config ? $config->navsafetimeout : 60);
     }
 }
 
@@ -113,6 +132,8 @@ function local_mseb_coursemodule_edit_post_actions($data, $course) {
         $mseballowios = isset($data->mseb_allowios) ? (int) $data->mseb_allowios : 0;
         $msebmintime = isset($data->mseb_mintime) ? (int) $data->mseb_mintime : 0;
         $msebminanswered = isset($data->mseb_minanswered) ? (int) $data->mseb_minanswered : 0;
+        $msebfacerecognition = isset($data->mseb_facerecognition) ? (int) $data->mseb_facerecognition : 0;
+        $msebnavsafetimeout = isset($data->mseb_navsafetimeout) ? (int) $data->mseb_navsafetimeout : 60;
 
         $record = $DB->get_record('local_mseb', ['quizid' => $quizid]);
         if ($record) {
@@ -122,6 +143,8 @@ function local_mseb_coursemodule_edit_post_actions($data, $course) {
             $record->allowios = $mseballowios;
             $record->mintime = $msebmintime;
             $record->minanswered = $msebminanswered;
+            $record->facerecognition = $msebfacerecognition;
+            $record->navsafetimeout = $msebnavsafetimeout;
             $DB->update_record('local_mseb', $record);
         } else {
             $newrecord = new stdClass();
@@ -132,6 +155,8 @@ function local_mseb_coursemodule_edit_post_actions($data, $course) {
             $newrecord->allowios = $mseballowios;
             $newrecord->mintime = $msebmintime;
             $newrecord->minanswered = $msebminanswered;
+            $newrecord->facerecognition = $msebfacerecognition;
+            $newrecord->navsafetimeout = $msebnavsafetimeout;
             $DB->insert_record('local_mseb', $newrecord);
         }
     }
@@ -250,7 +275,9 @@ function local_mseb_extend_navigation() {
             (int) $quizid,
             (bool) $isios,
             (bool) $ismseb,
-            (bool) $config->enabled
+            (bool) $config->enabled,
+            (bool) $config->facerecognition,
+            (int) ($config->navsafetimeout ?? 60)
         ]);
     }
 }

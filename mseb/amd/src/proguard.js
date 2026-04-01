@@ -31,8 +31,15 @@ import {get_string as getString} from 'core/str';
  * @param {boolean} isios Is iOS device.
  * @param {boolean} ismseb Is M-SEB app.
  * @param {boolean} msebenabled Is M-SEB Lock enabled.
+ * @param {boolean} facerecognition Is Face Recognition enabled.
+ * @param {number} navsafetimeout Navigation safety timeout in seconds.
  */
-export const init = async (quizid, isios, ismseb, msebenabled) => {
+export const init = async (quizid, isios, ismseb, msebenabled, facerecognition, navsafetimeout) => {
+    // 0. Update App State if M-SEB.
+    if (ismseb && window.Android && window.Android.setFaceRecognition) {
+        window.Android.setFaceRecognition(facerecognition);
+    }
+
     // 1. Instant Check.
     const path = location.pathname;
     if (!/\/mod\/quiz\/(attempt|view|summary)\.php/.test(path)) {
@@ -255,11 +262,18 @@ export const init = async (quizid, isios, ismseb, msebenabled) => {
         const t = e.target.closest('a, button, input[type="submit"], .qnbutton');
         if (t) {
             navsafe = true;
+            // Gunakan nilai dari plugin (dalam milidetik).
             setTimeout(() => {
                 navsafe = false;
-            }, 800);
+            }, (navsafetimeout || 60) * 1000); 
         }
     }, true);
+
+    // Kunci status navigasi aman saat halaman mulai berpindah (Unload).
+    window.addEventListener('beforeunload', () => {
+        navsafe = true;
+    });
+
 
     const initui = () => {
         if (document.getElementById('mseb-monitor')) {

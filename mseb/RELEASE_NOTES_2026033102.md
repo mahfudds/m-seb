@@ -1,4 +1,4 @@
-# 📦 Release Notes: M-SEB Plugin v23.5
+# ![alt text](image.png)
 **Build Version:** `2026033102` | **Release Date:** 2026-03-31
 
 Greetings! This release focuses on stability and security enhancements to ensure a smoother experience for both administrators and students.
