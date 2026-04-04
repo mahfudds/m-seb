@@ -136,22 +136,48 @@ define(['core/str'], function(Str) {
             };
 
             // Listeners.
+            var visibilityTimer = null;
             document.addEventListener('visibilitychange', function() {
-                if (document.visibilityState === 'hidden') { ignoreblur = true; if (!navsafe) triggerviolation(strLeaving); }
-                else { setTimeout(function() { ignoreblur = false; }, 1000); }
+                if (document.visibilityState === 'hidden') {
+                    ignoreblur = true;
+                    // Tunggu 2 detik sebelum trigger — cegah false positive saat navigasi/loading
+                    if (visibilityTimer) clearTimeout(visibilityTimer);
+                    visibilityTimer = setTimeout(function() {
+                        if (document.visibilityState === 'hidden' && !navsafe && !ispenaltyshowing) {
+                            triggerviolation(strLeaving);
+                        }
+                        visibilityTimer = null;
+                    }, 2000);
+                }
+                else {
+                    if (visibilityTimer) { clearTimeout(visibilityTimer); visibilityTimer = null; }
+                    setTimeout(function() { ignoreblur = false; }, 1000);
+                }
             });
 
             window.addEventListener('blur', function() { if (!ignoreblur) blurat = Date.now(); });
             window.addEventListener('focus', function() { if (blurat && (Date.now() - blurat > 800) && !navsafe) triggerviolation(strLeaving); blurat = 0; });
 
-            setInterval(function() { if (!document.hasFocus() && !navsafe && !ignoreblur && !ispenaltyshowing) triggerviolation(strLeaving); }, 1500);
+            var unfocusedCount = 0;
+            setInterval(function() {
+                if (!document.hasFocus() && !navsafe && !ignoreblur && !ispenaltyshowing) {
+                    unfocusedCount++;
+                    // Hanya trigger setelah 3x berturut-turut unfocused (4.5 detik)
+                    if (unfocusedCount >= 3) {
+                        triggerviolation(strLeaving);
+                        unfocusedCount = 0;
+                    }
+                } else {
+                    unfocusedCount = 0;
+                }
+            }, 1500);
 
             document.addEventListener('click', function(e) {
                 navsafe = true;
                 if (ismseb && window.Android && window.Android.triggerNavSafe) window.Android.triggerNavSafe();
                 setTimeout(function() { if (!longNavSafeActive) navsafe = false; }, 10000);
 
-                var t = e.target.closest('a, button, input[type="submit"], .qnbutton, label');
+                var t = e.target.closest('a, button, input[type="submit"], .qnbutton, label, [role="button"], .mod_quiz-next-nav, .submitbtns, .btn, [data-action], .nav-link, .page-link');
                 if (t) {
                     longNavSafeActive = true;
                     var timeout = Math.max(navsafetimeout || 60, 120);
